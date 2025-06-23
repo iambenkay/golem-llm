@@ -20,9 +20,20 @@ install_crate = { crate_name = "cargo-component", version = "0.20.0" }
 command = "cargo-component"
 args = ["build", "-p", "golem-websearch-google", "--no-default-features"]
 
+[tasks.build-brave]
+install_crate = { crate_name = "cargo-component", version = "0.20.0" }
+command = "cargo-component"
+args = ["build", "-p", "golem-websearch-brave"]
+
+[tasks.build-brave-portable]
+install_crate = { crate_name = "cargo-component", version = "0.20.0" }
+command = "cargo-component"
+args = ["build", "-p", "golem-websearch-brave", "--no-default-features"]
+
 [tasks.build]
 dependencies = [
     "build-google",
+    "build-brave",
 ]
 
 [tasks.build-portable]

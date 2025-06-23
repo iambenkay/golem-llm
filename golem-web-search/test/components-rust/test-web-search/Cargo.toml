@@ -10,7 +10,10 @@ required-features = []
 
 [features]
 default = ["google"]
-google =[]
+google = []
+brave = []
+tavily = []
+serper = []
 
 [dependencies]
 # To use common shared libs, use the following:
