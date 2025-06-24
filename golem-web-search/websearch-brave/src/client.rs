@@ -1,4 +1,3 @@
-
 use golem_web_search::error::from_reqwest_error;
 use golem_web_search::golem::web_search::types::SearchError;
 use log::trace;
@@ -20,10 +19,7 @@ impl BraveSearchApi {
         Self { api_key, client }
     }
 
-    pub fn search(
-        &self,
-        request: BraveSearchRequest,
-    ) -> Result<BraveSearchResponse, SearchError> {
+    pub fn search(&self, request: BraveSearchRequest) -> Result<BraveSearchResponse, SearchError> {
         trace!("Sending request to Brave Search API: {request:?}");
 
         let response: Response = self
@@ -372,9 +368,9 @@ pub struct BraveMixedItem {
 fn parse_response(response: Response) -> Result<BraveSearchResponse, SearchError> {
     match response.status() {
         StatusCode::OK => {
-            let body = response.text().map_err(|e| SearchError::BackendError(format!(
-                "Failed to read response body: {}", e
-            )))?;
+            let body = response.text().map_err(|e| {
+                SearchError::BackendError(format!("Failed to read response body: {}", e))
+            })?;
             match serde_json::from_str::<BraveSearchResponse>(&body) {
                 Ok(parsed) => Ok(parsed),
                 Err(e) => Err(SearchError::BackendError(format!(
@@ -382,16 +378,18 @@ fn parse_response(response: Response) -> Result<BraveSearchResponse, SearchError
                     e, body
                 ))),
             }
-        },
+        }
         StatusCode::TOO_MANY_REQUESTS => Err(SearchError::RateLimited(60)),
         StatusCode::BAD_REQUEST => Err(SearchError::InvalidQuery),
         _ => {
             let status = response.status();
-            let body = response.text().unwrap_or_else(|_| "<failed to read body>".into());
+            let body = response
+                .text()
+                .unwrap_or_else(|_| "<failed to read body>".into());
             Err(SearchError::BackendError(format!(
                 "Request failed: {} \nRaw body: {}",
                 status, body
             )))
-        },
+        }
     }
 }

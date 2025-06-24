@@ -5,7 +5,9 @@ use golem_web_search::durability::DurableWebSearch;
 use golem_web_search::golem::web_search::types::{
     SearchError, SearchMetadata, SearchParams, SearchResult,
 };
-use golem_web_search::golem_web_search::web_search::web_search::{Guest, GuestSearchSession, SearchSession};
+use golem_web_search::golem_web_search::web_search::web_search::{
+    Guest, GuestSearchSession, SearchSession,
+};
 use golem_web_search::LOGGING_STATE;
 use std::cell::RefCell;
 
@@ -18,8 +20,6 @@ impl GoogleWebSearchComponent {
     const API_KEY_ENV_VAR: &'static str = "GOOGLE_API_KEY";
     const SEARCH_ENGINE_ID_ENV_VAR: &'static str = "GOOGLE_SEARCH_ENGINE_ID";
 }
-
-
 
 pub struct GoogleSearchSession {
     client: GoogleSearchApi,
@@ -48,8 +48,9 @@ impl GuestSearchSession for GoogleSearchSession {
                 "No more results available".to_string(),
             ));
         }
-        *self.current_start_index.borrow_mut() = *self.current_start_index.borrow_mut() + 1 as u32 ;
-        let request = convert_params_to_request(&self.params, Some(*self.current_start_index.borrow()));
+        *self.current_start_index.borrow_mut() = *self.current_start_index.borrow_mut() + 1_u32;
+        let request =
+            convert_params_to_request(&self.params, Some(*self.current_start_index.borrow()));
         let response = self.client.search(request)?;
         let (results, metadata) = convert_response_to_results(response, &self.params);
 
@@ -77,7 +78,6 @@ impl GuestSearchSession for GoogleSearchSession {
     }
 }
 
-
 impl Guest for GoogleWebSearchComponent {
     type SearchSession = GoogleSearchSession;
 
@@ -86,10 +86,10 @@ impl Guest for GoogleWebSearchComponent {
 
         with_config_key(
             &[Self::API_KEY_ENV_VAR, Self::SEARCH_ENGINE_ID_ENV_VAR],
-            |e| Err(e),
+            Err,
             |keys| {
-                let api_key=  keys.get(Self::API_KEY_ENV_VAR).unwrap().to_owned();
-                let search_engine_id= keys.get(Self::SEARCH_ENGINE_ID_ENV_VAR).unwrap().to_owned();
+                let api_key = keys.get(Self::API_KEY_ENV_VAR).unwrap().to_owned();
+                let search_engine_id = keys.get(Self::SEARCH_ENGINE_ID_ENV_VAR).unwrap().to_owned();
                 let client = GoogleSearchApi::new(api_key, search_engine_id);
                 Ok(SearchSession::new(GoogleSearchSession::new(client, params)))
             },
@@ -102,21 +102,21 @@ impl Guest for GoogleWebSearchComponent {
         LOGGING_STATE.with_borrow_mut(|state| state.init());
 
         with_config_key(
-            &[Self::API_KEY_ENV_VAR,Self::SEARCH_ENGINE_ID_ENV_VAR],
-            |e| Err(e),
+            &[Self::API_KEY_ENV_VAR, Self::SEARCH_ENGINE_ID_ENV_VAR],
+            Err,
             |keys| {
-                let api_key= keys.get(Self::API_KEY_ENV_VAR).unwrap().to_owned();
-                let search_engine_id= keys.get(Self::SEARCH_ENGINE_ID_ENV_VAR).unwrap().to_owned();
+                let api_key = keys.get(Self::API_KEY_ENV_VAR).unwrap().to_owned();
+                let search_engine_id = keys.get(Self::SEARCH_ENGINE_ID_ENV_VAR).unwrap().to_owned();
                 let client = GoogleSearchApi::new(api_key, search_engine_id);
                 let request = convert_params_to_request(&params, None);
                 let response = client.search(request)?;
                 let (results, metadata) = convert_response_to_results(response, &params);
                 Ok((results, metadata))
-            }
+            },
         )
     }
 }
 
 type DurableGoogleWebSearchComponent = DurableWebSearch<GoogleWebSearchComponent>;
-    
+
 golem_web_search::export_web_search!(DurableGoogleWebSearchComponent with_types_in golem_web_search);

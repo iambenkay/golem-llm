@@ -6,7 +6,9 @@ use golem_web_search::durability::DurableWebSearch;
 use golem_web_search::golem::web_search::types::{
     SearchError, SearchMetadata, SearchParams, SearchResult,
 };
-use golem_web_search::golem_web_search::web_search::web_search::{Guest, GuestSearchSession, SearchSession};
+use golem_web_search::golem_web_search::web_search::web_search::{
+    Guest, GuestSearchSession, SearchSession,
+};
 
 use golem_web_search::LOGGING_STATE;
 use std::cell::RefCell;
@@ -84,15 +86,11 @@ impl Guest for SerperWebSearchComponent {
     fn start_search(params: SearchParams) -> Result<SearchSession, SearchError> {
         LOGGING_STATE.with_borrow_mut(|state| state.init());
 
-        with_config_key(
-            &[Self::API_KEY_ENV_VAR],
-            |e| Err(e),
-            |keys| {
-                let api_key = keys.get(Self::API_KEY_ENV_VAR).unwrap().to_owned();
-                let client = SerperSearchApi::new(api_key);
-                Ok(SearchSession::new(SerperSearchSession::new(client, params)))
-            },
-        )
+        with_config_key(&[Self::API_KEY_ENV_VAR], Err, |keys| {
+            let api_key = keys.get(Self::API_KEY_ENV_VAR).unwrap().to_owned();
+            let client = SerperSearchApi::new(api_key);
+            Ok(SearchSession::new(SerperSearchSession::new(client, params)))
+        })
     }
 
     fn search_once(
@@ -100,18 +98,14 @@ impl Guest for SerperWebSearchComponent {
     ) -> Result<(Vec<SearchResult>, Option<SearchMetadata>), SearchError> {
         LOGGING_STATE.with_borrow_mut(|state| state.init());
 
-        with_config_key(
-            &[Self::API_KEY_ENV_VAR],
-            |e| Err(e),
-            |keys| {
-                let api_key = keys.get(Self::API_KEY_ENV_VAR).unwrap().to_owned();
-                let client = SerperSearchApi::new(api_key);
-                let request = convert_params_to_request(&params, None);
-                let response = client.search(request)?;
-                let (results, metadata) = convert_response_to_results(response, &params);
-                Ok((results, metadata))
-            },
-        )
+        with_config_key(&[Self::API_KEY_ENV_VAR], Err, |keys| {
+            let api_key = keys.get(Self::API_KEY_ENV_VAR).unwrap().to_owned();
+            let client = SerperSearchApi::new(api_key);
+            let request = convert_params_to_request(&params, None);
+            let response = client.search(request)?;
+            let (results, metadata) = convert_response_to_results(response, &params);
+            Ok((results, metadata))
+        })
     }
 }
 

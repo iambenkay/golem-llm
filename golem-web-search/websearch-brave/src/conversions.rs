@@ -5,10 +5,7 @@ use golem_web_search::golem::web_search::types::{
     ImageResult, SafeSearchLevel, SearchMetadata, SearchParams, SearchResult, TimeRange,
 };
 
-pub fn convert_params_to_request(
-    params: &SearchParams,
-    offset: Option<u32>,
-) -> BraveSearchRequest {
+pub fn convert_params_to_request(params: &SearchParams, offset: Option<u32>) -> BraveSearchRequest {
     let mut request = BraveSearchRequest {
         q: params.query.clone(),
         country: params.region.clone(),
@@ -98,13 +95,17 @@ pub fn convert_response_to_results(
         }
     }
 
-
-
     let total_results = response
         .query
         .as_ref()
         .and_then(|q| q.more_results_available)
-        .map(|has_more| if has_more { 1000u64 } else { results.len() as u64 });
+        .map(|has_more| {
+            if has_more {
+                1000u64
+            } else {
+                results.len() as u64
+            }
+        });
 
     let next_page_token = response
         .query
@@ -120,7 +121,7 @@ pub fn convert_response_to_results(
         query: params.query.clone(),
         total_results,
         search_time_ms: None,
-        safe_search: params.safe_search.clone(),
+        safe_search: params.safe_search,
         language: params.language.clone(),
         region: params.region.clone(),
         next_page_token,
@@ -273,10 +274,7 @@ mod tests {
         let params = create_test_params();
         let request = convert_params_to_request(&params, Some(20));
 
-        assert_eq!(
-            request.q,
-            "test query (site:example.com OR site:test.org)"
-        );
+        assert_eq!(request.q, "test query (site:example.com OR site:test.org)");
         assert_eq!(request.country, Some("us".to_string()));
         assert_eq!(request.search_lang, Some("en".to_string()));
         assert_eq!(request.ui_lang, Some("en".to_string()));

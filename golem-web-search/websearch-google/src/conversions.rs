@@ -11,7 +11,7 @@ pub fn convert_params_to_request(
 ) -> GoogleSearchRequest {
     let mut request = GoogleSearchRequest {
         q: params.query.clone(),
-        cx: String::new(), 
+        cx: String::new(),
         key: String::new(),
         num: params.max_results,
         start: start_index,
@@ -75,14 +75,14 @@ pub fn convert_response_to_results(
                 snippet: item.snippet,
                 display_url: item.display_link,
                 source: Some("Google".to_string()),
-                score: None, 
+                score: None,
                 html_snippet: if params.include_html.unwrap_or(false) {
                     item.html_snippet
                 } else {
                     None
                 },
-                date_published: None, 
-                images: None,        
+                date_published: None,
+                images: None,
                 content_chunks: None,
             })
             .collect()
@@ -102,7 +102,7 @@ pub fn convert_response_to_results(
             .as_ref()
             .and_then(|info| info.search_time)
             .map(|t| t * 1000.0),
-        safe_search: params.safe_search.clone(),
+        safe_search: params.safe_search,
         language: params.language.clone(),
         region: params.region.clone(),
         next_page_token: response

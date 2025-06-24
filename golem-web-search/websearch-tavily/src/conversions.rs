@@ -1,4 +1,4 @@
-use crate::client::{TavilySearchRequest, TavilySearchResponse, TavilyImage};
+use crate::client::{TavilyImage, TavilySearchRequest, TavilySearchResponse};
 use golem_web_search::golem::web_search::types::{
     ImageResult, SearchMetadata, SearchParams, SearchResult, TimeRange,
 };
@@ -7,13 +7,20 @@ pub fn convert_params_to_request(
     params: &SearchParams,
     _offset: Option<u32>,
 ) -> TavilySearchRequest {
-    let max_results = params.max_results.unwrap_or(10).min(20); 
+    let max_results = params.max_results.unwrap_or(10).min(20);
 
     TavilySearchRequest {
         query: params.query.clone(),
-        search_depth: Some(if params.advanced_answer.unwrap_or(false) { "advanced" } else { "basic" }.to_string()),
+        search_depth: Some(
+            if params.advanced_answer.unwrap_or(false) {
+                "advanced"
+            } else {
+                "basic"
+            }
+            .to_string(),
+        ),
         topic: Some("news".to_string()), // using news as default for realtime updates
-        max_results: Some(max_results), 
+        max_results: Some(max_results),
         include_answer: params.advanced_answer,
         include_raw_content: Some(false),
         include_images: Some(true),

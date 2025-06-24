@@ -256,31 +256,36 @@ pub struct SerperSearchInformation {
 fn parse_response(response: Response) -> Result<SerperSearchResponse, SearchError> {
     match response.status() {
         StatusCode::OK => {
-            let body = response.text().map_err(|e| SearchError::BackendError(format!(
-                "Failed to read response body: {}", e
-            )))?;
-            
+            let body = response.text().map_err(|e| {
+                SearchError::BackendError(format!("Failed to read response body: {}", e))
+            })?;
+
             // Serper returns an array of responses when we send an array, we take the first one
-            let parsed_array = serde_json::from_str::<Vec<SerperSearchResponse>>(&body)
-                .map_err(|e| SearchError::BackendError(format!(
-                    "Failed to parse response as array: {} \nRaw body: {}",
-                    e, body
-                )))?;
-            
-            parsed_array.into_iter().next().ok_or_else(|| {
-                SearchError::BackendError("Empty response array".to_string())
-            })
-        },
+            let parsed_array =
+                serde_json::from_str::<Vec<SerperSearchResponse>>(&body).map_err(|e| {
+                    SearchError::BackendError(format!(
+                        "Failed to parse response as array: {} \nRaw body: {}",
+                        e, body
+                    ))
+                })?;
+
+            parsed_array
+                .into_iter()
+                .next()
+                .ok_or_else(|| SearchError::BackendError("Empty response array".to_string()))
+        }
         StatusCode::TOO_MANY_REQUESTS => Err(SearchError::RateLimited(60)),
         StatusCode::BAD_REQUEST => Err(SearchError::InvalidQuery),
         StatusCode::UNAUTHORIZED => Err(SearchError::BackendError("Invalid API key".to_string())),
         _ => {
             let status = response.status();
-            let body = response.text().unwrap_or_else(|_| "<failed to read body>".into());
+            let body = response
+                .text()
+                .unwrap_or_else(|_| "<failed to read body>".into());
             Err(SearchError::BackendError(format!(
                 "Request failed: {} \nRaw body: {}",
                 status, body
             )))
-        },
+        }
     }
 }

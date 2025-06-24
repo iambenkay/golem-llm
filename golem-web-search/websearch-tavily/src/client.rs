@@ -124,9 +124,9 @@ pub struct TavilyError {
 fn parse_response(response: Response) -> Result<TavilySearchResponse, SearchError> {
     match response.status() {
         StatusCode::OK => {
-            let body = response.text().map_err(|e| SearchError::BackendError(format!(
-                "Failed to read response body: {}", e
-            )))?;
+            let body = response.text().map_err(|e| {
+                SearchError::BackendError(format!("Failed to read response body: {}", e))
+            })?;
             match serde_json::from_str::<TavilySearchResponse>(&body) {
                 Ok(parsed) => Ok(parsed),
                 Err(e) => Err(SearchError::BackendError(format!(
@@ -134,25 +134,27 @@ fn parse_response(response: Response) -> Result<TavilySearchResponse, SearchErro
                     e, body
                 ))),
             }
-        },
+        }
         StatusCode::BAD_REQUEST => {
-            let _body = response.text().unwrap_or_else(|_| "<failed to read body>".into());
+            let _body = response
+                .text()
+                .unwrap_or_else(|_| "<failed to read body>".into());
             Err(SearchError::InvalidQuery)
-        },
-        StatusCode::UNAUTHORIZED => {
-            Err(SearchError::BackendError("Invalid API key".to_string()))
-        },
+        }
+        StatusCode::UNAUTHORIZED => Err(SearchError::BackendError("Invalid API key".to_string())),
         StatusCode::TOO_MANY_REQUESTS => Err(SearchError::RateLimited(60)),
         status if status.as_u16() == 432 => {
             Err(SearchError::BackendError("Plan limit exceeded".to_string()))
-        },
+        }
         _ => {
             let status = response.status();
-            let body = response.text().unwrap_or_else(|_| "<failed to read body>".into());
+            let body = response
+                .text()
+                .unwrap_or_else(|_| "<failed to read body>".into());
             Err(SearchError::BackendError(format!(
                 "Request failed: {} \nRaw body: {}",
                 status, body
             )))
-        },
+        }
     }
 }

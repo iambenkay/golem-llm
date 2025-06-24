@@ -44,7 +44,7 @@ impl GoogleSearchApi {
     }
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct GoogleSearchRequest {
     pub q: String,
     pub cx: String,
@@ -70,56 +70,68 @@ pub struct GoogleSearchRequest {
     pub site_search_filter: Option<String>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct GoogleSearchResponse {
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub items: Option<Vec<GoogleSearchItem>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "searchInformation")]
     pub search_information: Option<GoogleSearchInformation>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub queries: Option<GoogleQueries>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub error: Option<GoogleError>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct GoogleSearchItem {
     pub title: String,
     pub link: String,
     pub snippet: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "displayLink")]
     pub display_link: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "htmlSnippet")]
     pub html_snippet: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "pagemap")]
     pub pagemap: Option<serde_json::Value>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct GoogleSearchInformation {
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "totalResults")]
     pub total_results: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "searchTime")]
     pub search_time: Option<f64>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct GoogleQueries {
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub request: Option<Vec<GoogleQueryInfo>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "nextPage")]
     pub next_page: Option<Vec<GoogleQueryInfo>>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct GoogleQueryInfo {
     pub title: String,
     #[serde(rename = "totalResults")]
     pub total_results: Option<String>,
     #[serde(rename = "searchTerms")]
     pub search_terms: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "startIndex")]
     pub start_index: Option<u32>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct GoogleError {
     pub code: u32,
     pub message: String,
@@ -142,7 +154,7 @@ fn parse_response(response: Response) -> Result<GoogleSearchResponse, SearchErro
 
     if let Some(error) = &search_response.error {
         return match error.code {
-            429 => Err(SearchError::RateLimited(60)), 
+            429 => Err(SearchError::RateLimited(60)),
             400 => Err(SearchError::InvalidQuery),
             _ => Err(SearchError::BackendError(format!(
                 "Google API error: {}",

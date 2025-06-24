@@ -3,16 +3,13 @@ use golem_web_search::golem::web_search::types::{
     ImageResult, SearchMetadata, SearchParams, SearchResult, TimeRange,
 };
 
-pub fn convert_params_to_request(
-    params: &SearchParams,
-    page: Option<u32>,
-) -> SerperSearchRequest {
+pub fn convert_params_to_request(params: &SearchParams, page: Option<u32>) -> SerperSearchRequest {
     let num = params.max_results.unwrap_or(10).min(100); // Serper max is 100
-    
+
     SerperSearchRequest {
         q: params.query.clone(),
         location: params.region.clone(),
-        gl: params.region.clone(), // Country code
+        gl: params.region.clone(),   // Country code
         hl: params.language.clone(), // Language code
         num: Some(num),
         autocorrect: Some(true),
@@ -68,52 +65,63 @@ pub fn convert_response_to_results(
 
     // Convert answer box to a special result if present
     if let Some(answer_box) = response.answer_box {
-        search_results.insert(0, SearchResult {
-            title: answer_box.title,
-            url: answer_box.link.unwrap_or_default(),
-            snippet: answer_box.answer.or(answer_box.snippet).unwrap_or_default(),
-            display_url: None,
-            source: Some("Serper Answer Box".to_string()),
-            score: Some(1.0), // Highest score for answer box
-            html_snippet: None,
-            date_published: None,
-            images: None,
-            content_chunks: None,
-        });
+        search_results.insert(
+            0,
+            SearchResult {
+                title: answer_box.title,
+                url: answer_box.link.unwrap_or_default(),
+                snippet: answer_box.answer.or(answer_box.snippet).unwrap_or_default(),
+                display_url: None,
+                source: Some("Serper Answer Box".to_string()),
+                score: Some(1.0), // Highest score for answer box
+                html_snippet: None,
+                date_published: None,
+                images: None,
+                content_chunks: None,
+            },
+        );
     }
 
     // Convert knowledge graph to a special result if present
     if let Some(kg) = response.knowledge_graph {
-        let kg_images = kg.image_url.map(|url| vec![ImageResult {
-            url,
-            description: Some(kg.title.clone()),
-        }]);
-
-        search_results.insert(0, SearchResult {
-            title: kg.title,
-            url: kg.website.unwrap_or_default(),
-            snippet: kg.description.unwrap_or_default(),
-            display_url: None,
-            source: Some("Serper Knowledge Graph".to_string()),
-            score: Some(1.0), // Highest score for knowledge graph
-            html_snippet: None,
-            date_published: None,
-            images: kg_images,
-            content_chunks: None,
+        let kg_images = kg.image_url.map(|url| {
+            vec![ImageResult {
+                url,
+                description: Some(kg.title.clone()),
+            }]
         });
+
+        search_results.insert(
+            0,
+            SearchResult {
+                title: kg.title,
+                url: kg.website.unwrap_or_default(),
+                snippet: kg.description.unwrap_or_default(),
+                display_url: None,
+                source: Some("Serper Knowledge Graph".to_string()),
+                score: Some(1.0), // Highest score for knowledge graph
+                html_snippet: None,
+                date_published: None,
+                images: kg_images,
+                content_chunks: None,
+            },
+        );
     }
 
-    let total_results = response.search_information
+    let total_results = response
+        .search_information
         .as_ref()
         .and_then(|info| info.total_results.as_ref())
         .and_then(|total| total.parse::<u64>().ok());
 
-    let search_time_ms = response.search_information
+    let search_time_ms = response
+        .search_information
         .as_ref()
         .and_then(|info| info.time_taken.map(|t| t * 1000.0)); // Convert to milliseconds
 
     let metadata = Some(SearchMetadata {
-        query: response.search_parameters
+        query: response
+            .search_parameters
             .as_ref()
             .map(|sp| sp.q.clone())
             .unwrap_or_else(|| params.query.clone()),

@@ -76,11 +76,12 @@ mod durable_impl {
         fn search_once(
             params: SearchParams,
         ) -> Result<(Vec<SearchResult>, Option<SearchMetadata>), SearchError> {
-            let durability = Durability::<(Vec<SearchResult>, Option<SearchMetadata>), UnusedError>::new(
-                "golem_web_search",
-                "search_once",
-                DurableFunctionType::WriteRemote,
-            );
+            let durability =
+                Durability::<(Vec<SearchResult>, Option<SearchMetadata>), UnusedError>::new(
+                    "golem_web_search",
+                    "search_once",
+                    DurableFunctionType::WriteRemote,
+                );
             if durability.is_live() {
                 let result = with_persistence_level(PersistenceLevel::PersistNothing, || {
                     Impl::search_once(params.clone())
