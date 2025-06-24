@@ -12,7 +12,7 @@ wit_bindgen::generate!({
     pub_export_macro: true,
 });
 
-pub use crate::exports::golem;
+pub use crate::exports::golem as golem_web_search;
 pub use __export_web_search_library_impl as export_web_search;
 use std::cell::RefCell;
 use std::str::FromStr;

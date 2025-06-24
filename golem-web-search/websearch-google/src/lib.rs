@@ -1,10 +1,11 @@
 use crate::client::GoogleSearchApi;
 use crate::conversions::{convert_params_to_request, convert_response_to_results};
 use golem_web_search::config::with_config_key;
+use golem_web_search::durability::DurableWebSearch;
 use golem_web_search::golem::web_search::types::{
     SearchError, SearchMetadata, SearchParams, SearchResult,
 };
-use golem_web_search::web_search::web_search::{Guest, GuestSearchSession, SearchSession};
+use golem_web_search::golem_web_search::web_search::web_search::{Guest, GuestSearchSession, SearchSession};
 use golem_web_search::LOGGING_STATE;
 use std::cell::RefCell;
 
@@ -116,5 +117,6 @@ impl Guest for GoogleWebSearchComponent {
     }
 }
 
-
-golem_web_search::export_web_search!(GoogleWebSearchComponent with_types_in golem_web_search);
+type DurableGoogleWebSearchComponent = DurableWebSearch<GoogleWebSearchComponent>;
+    
+golem_web_search::export_web_search!(DurableGoogleWebSearchComponent with_types_in golem_web_search);

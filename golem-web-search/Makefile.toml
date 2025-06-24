@@ -30,15 +30,40 @@ install_crate = { crate_name = "cargo-component", version = "0.20.0" }
 command = "cargo-component"
 args = ["build", "-p", "golem-websearch-brave", "--no-default-features"]
 
+[tasks.build-tavily]
+install_crate = { crate_name = "cargo-component", version = "0.20.0" }
+command = "cargo-component"
+args = ["build", "-p", "golem-websearch-tavily"]
+
+[tasks.build-tavily-portable]
+install_crate = { crate_name = "cargo-component", version = "0.20.0" }
+command = "cargo-component"
+args = ["build", "-p", "golem-websearch-tavily", "--no-default-features"]
+
+[tasks.build-serper]
+install_crate = { crate_name = "cargo-component", version = "0.20.0" }
+command = "cargo-component"
+args = ["build", "-p", "golem-websearch-serper"]
+
+[tasks.build-serper-portable]
+install_crate = { crate_name = "cargo-component", version = "0.20.0" }
+command = "cargo-component"
+args = ["build", "-p", "golem-websearch-serper", "--no-default-features"]
+
 [tasks.build]
 dependencies = [
     "build-google",
     "build-brave",
+    "build-tavily",
+    "build-serper",
 ]
 
 [tasks.build-portable]
 dependencies = [
     "build-google-portable",
+    "build-brave-portable",
+    "build-tavily-portable",
+    "build-serper-portable",
 ]
 
 [tasks.build-all]
@@ -50,11 +75,17 @@ cm_run_task clean
 cm_run_task build
 
 cp ../target/wasm32-wasip1/debug/golem_websearch_google.wasm ../components/web-search/debug/golem_websearch_google.wasm
+cp ../target/wasm32-wasip1/debug/golem_websearch_brave.wasm ../components/web-search/debug/golem_websearch_brave.wasm
+cp ../target/wasm32-wasip1/debug/golem_websearch_tavily.wasm ../components/web-search/debug/golem_websearch_tavily.wasm
+cp ../target/wasm32-wasip1/debug/golem_websearch_serper.wasm ../components/web-search/debug/golem_websearch_serper.wasm
 
 cm_run_task clean
 cm_run_task build-portable
 
 cp ../target/wasm32-wasip1/debug/golem_websearch_google.wasm ../components/web-search/debug/golem_websearch_google-portable.wasm
+cp ../target/wasm32-wasip1/debug/golem_websearch_brave.wasm ../components/web-search/debug/golem_websearch_brave-portable.wasm
+cp ../target/wasm32-wasip1/debug/golem_websearch_tavily.wasm ../components/web-search/debug/golem_websearch_tavily-portable.wasm
+cp ../target/wasm32-wasip1/debug/golem_websearch_serper.wasm ../components/web-search/debug/golem_websearch_serper-portable.wasm
 '''
 
 [tasks.release-build-google]
@@ -67,14 +98,50 @@ install_crate = { crate_name = "cargo-component", version = "0.20.0" }
 command = "cargo-component"
 args = ["build", "-p", "golem-websearch-google", "--release", "--no-default-features"]
 
+[tasks.release-build-brave]
+install_crate = { crate_name = "cargo-component", version = "0.20.0" }
+command = "cargo-component"
+args = ["build", "-p", "golem-websearch-brave", "--release"]
+
+[tasks.release-build-brave-portable]
+install_crate = { crate_name = "cargo-component", version = "0.20.0" }
+command = "cargo-component"
+args = ["build", "-p", "golem-websearch-brave", "--release", "--no-default-features"]
+
+[tasks.release-build-tavily]
+install_crate = { crate_name = "cargo-component", version = "0.20.0" }
+command = "cargo-component"
+args = ["build", "-p", "golem-websearch-tavily", "--release"]
+
+[tasks.release-build-tavily-portable]
+install_crate = { crate_name = "cargo-component", version = "0.20.0" }
+command = "cargo-component"
+args = ["build", "-p", "golem-websearch-tavily", "--release", "--no-default-features"]
+
+[tasks.release-build-serper]
+install_crate = { crate_name = "cargo-component", version = "0.20.0" }
+command = "cargo-component"
+args = ["build", "-p", "golem-websearch-serper", "--release"]
+
+[tasks.release-build-serper-portable]
+install_crate = { crate_name = "cargo-component", version = "0.20.0" }
+command = "cargo-component"
+args = ["build", "-p", "golem-websearch-serper", "--release", "--no-default-features"]
+
 [tasks.release-build]
 dependencies = [
     "release-build-google",
+    "release-build-brave",
+    "release-build-tavily",
+    "release-build-serper",
 ]
 
 [tasks.release-build-portable]
 dependencies = [
     "release-build-google-portable",
+    "release-build-brave-portable",
+    "release-build-tavily-portable",
+    "release-build-serper-portable",
 ]
 
 [tasks.release-build-all]
@@ -88,11 +155,17 @@ cm_run_task clean
 cm_run_task release-build
 
 cp ../target/wasm32-wasip1/release/golem_websearch_google.wasm ../components/web-search/release/golem_websearch_google.wasm
+cp ../target/wasm32-wasip1/release/golem_websearch_brave.wasm ../components/web-search/release/golem_websearch_brave.wasm
+cp ../target/wasm32-wasip1/release/golem_websearch_tavily.wasm ../components/web-search/release/golem_websearch_tavily.wasm
+cp ../target/wasm32-wasip1/release/golem_websearch_serper.wasm ../components/web-search/release/golem_websearch_serper.wasm
 
 cm_run_task clean
 cm_run_task release-build-portable
 
 cp ../target/wasm32-wasip1/release/golem_websearch_google.wasm ../components/web-search/release/golem_websearch_google-portable.wasm
+cp ../target/wasm32-wasip1/release/golem_websearch_brave.wasm ../components/web-search/release/golem_websearch_brave-portable.wasm
+cp ../target/wasm32-wasip1/release/golem_websearch_tavily.wasm ../components/web-search/release/golem_websearch_tavily-portable.wasm
+cp ../target/wasm32-wasip1/release/golem_websearch_serper.wasm ../components/web-search/release/golem_websearch_serper-portable.wasm
 '''
 
 [tasks.wit-update]
@@ -113,6 +186,21 @@ rm -r websearch-google/wit/deps
 mkdir websearch-google/wit/deps/golem-web-search
 cp wit/golem-web-search.wit websearch-google/wit/deps/golem-web-search/golem-web-search.wit
 cp wit/deps/wasi:io websearch-google/wit/deps
+
+rm -r websearch-brave/wit/deps
+mkdir websearch-brave/wit/deps/golem-web-search
+cp wit/golem-web-search.wit websearch-brave/wit/deps/golem-web-search/golem-web-search.wit
+cp wit/deps/wasi:io websearch-brave/wit/deps
+
+rm -r websearch-tavily/wit/deps
+mkdir websearch-tavily/wit/deps/golem-web-search
+cp wit/golem-web-search.wit websearch-tavily/wit/deps/golem-web-search/golem-web-search.wit
+cp wit/deps/wasi:io websearch-tavily/wit/deps
+
+rm -r websearch-serper/wit/deps
+mkdir websearch-serper/wit/deps/golem-web-search
+cp wit/golem-web-search.wit websearch-serper/wit/deps/golem-web-search/golem-web-search.wit
+cp wit/deps/wasi:io websearch-serper/wit/deps
 """
 
 [tasks.check]
@@ -156,17 +244,24 @@ args = [
 ]
 
 
+# cargo-binstall golem-cli@1.2.2-dev.11 --locked --force --no-confirm
+# cargo-binstall wac-cli --locked --force --no-confirm
+
 [tasks.build-test-components]
 dependencies = ["build"]
 description = "Builds all test components with golem-cli"
 install_crate = "cargo-binstall"
 script = '''
-cargo-binstall golem-cli@1.2.2-dev.11 --locked --force --no-confirm
-cargo-binstall wac-cli --locked --force --no-confirm
 cd test
 golem-cli --version
 golem-cli app clean
 golem-cli app build -b google-debug
+golem-cli app clean
+golem-cli app build -b brave-debug
+golem-cli app clean
+golem-cli app build -b tavily-debug
+golem-cli app clean
+golem-cli app build -b serper-debug
 '''
 
 
