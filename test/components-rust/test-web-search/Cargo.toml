@@ -9,7 +9,7 @@ crate-type = ["cdylib"]
 required-features = []
 
 [features]
-default = ["google"]
+default = []
 google = []
 brave = []
 tavily = []
