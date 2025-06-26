@@ -169,7 +169,7 @@ components:
         clean:
           - src/bindings.rs
 
-    
+    defaultProfile: google-debug
 
 dependencies:
   test:web-search:
