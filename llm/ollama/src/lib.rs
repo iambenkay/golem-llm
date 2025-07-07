@@ -10,9 +10,9 @@ use golem_llm::{
         ChatEvent, ChatStream, Config, ContentPart, Error, FinishReason, Guest, Message,
         ResponseMetadata, Role, StreamDelta, StreamEvent, ToolCall, ToolResult, Usage,
     },
-    LOGGING_STATE,
 };
 use golem_rust::wasm_rpc::Pollable;
+use golem_utils::LOGGING_STATE;
 use log::trace;
 
 mod client;

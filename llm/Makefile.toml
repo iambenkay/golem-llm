@@ -175,9 +175,11 @@ for module in ${modules}
 end
 
 # Copy WIT files for integration tests
-rm -r ../test/wit
+rm -r ../test/wit/deps/golem-llm
+
 mkdir ../test/wit/deps/golem-llm
 mkdir ../test/wit/deps/io
+
 cp wit/golem-llm.wit ../test/wit/deps/golem-llm/golem-llm.wit
 cp wit/deps/wasi:io/error.wit ../test/wit/deps/io/error.wit
 cp wit/deps/wasi:io/poll.wit ../test/wit/deps/io/poll.wit

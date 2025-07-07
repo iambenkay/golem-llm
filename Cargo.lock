@@ -342,7 +342,6 @@ dependencies = [
  "nom",
  "reqwest",
  "thiserror",
- "wasi-logger",
  "wit-bindgen 0.40.0",
 ]
 
@@ -353,6 +352,7 @@ dependencies = [
  "base64 0.22.1",
  "golem-llm",
  "golem-rust",
+ "golem-utils",
  "log",
  "reqwest",
  "serde",
@@ -367,6 +367,7 @@ dependencies = [
  "base64 0.22.1",
  "golem-llm",
  "golem-rust",
+ "golem-utils",
  "log",
  "reqwest",
  "serde",
@@ -381,6 +382,7 @@ dependencies = [
  "base64 0.21.7",
  "golem-llm",
  "golem-rust",
+ "golem-utils",
  "log",
  "mime_guess",
  "reqwest",
@@ -397,6 +399,7 @@ dependencies = [
  "base64 0.22.1",
  "golem-llm",
  "golem-rust",
+ "golem-utils",
  "log",
  "reqwest",
  "serde",
@@ -411,6 +414,7 @@ dependencies = [
  "base64 0.22.1",
  "golem-llm",
  "golem-rust",
+ "golem-utils",
  "log",
  "reqwest",
  "serde",
@@ -442,6 +446,44 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn",
+]
+
+[[package]]
+name = "golem-utils"
+version = "0.0.0"
+dependencies = [
+ "golem-rust",
+ "log",
+ "thiserror",
+ "wasi-logger",
+]
+
+[[package]]
+name = "golem-vector"
+version = "0.0.0"
+dependencies = [
+ "golem-rust",
+ "golem-utils",
+ "log",
+ "mime",
+ "nom",
+ "reqwest",
+ "thiserror",
+ "wit-bindgen 0.40.0",
+]
+
+[[package]]
+name = "golem-vector-qdrant"
+version = "0.0.0"
+dependencies = [
+ "base64 0.22.1",
+ "golem-utils",
+ "golem-vector",
+ "log",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "wit-bindgen-rt 0.40.0",
 ]
 
 [[package]]
@@ -693,6 +735,13 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "78ca9ab1a0babb1e7d5695e3530886289c18cf2f87ec19a575a0abdce112e3a3"
 
 [[package]]
+name = "milvus"
+version = "0.1.0"
+dependencies = [
+ "wit-bindgen-rt 0.40.0",
+]
+
+[[package]]
 name = "mime"
 version = "0.3.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -755,6 +804,13 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e3148f5046208a5d56bcfc03053e3ca6334e51da8dfb19b6cdc8b306fae3283e"
 
 [[package]]
+name = "pgvector"
+version = "0.1.0"
+dependencies = [
+ "wit-bindgen-rt 0.40.0",
+]
+
+[[package]]
 name = "pin-project-lite"
 version = "0.2.16"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -765,6 +821,13 @@ name = "pin-utils"
 version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8b870d8c151b6f2fb93e84a13146138f05d02ed11c7e7c54f8826aaaf7c9f184"
+
+[[package]]
+name = "pinecone"
+version = "0.1.0"
+dependencies = [
+ "wit-bindgen-rt 0.40.0",
+]
 
 [[package]]
 name = "potential_utf"

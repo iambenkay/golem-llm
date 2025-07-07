@@ -14,8 +14,8 @@ use golem_llm::golem::llm::llm::{
     ChatEvent, ChatStream, Config, ContentPart, Error, FinishReason, Guest, Message,
     ResponseMetadata, StreamDelta, StreamEvent, ToolCall, ToolResult,
 };
-use golem_llm::LOGGING_STATE;
 use golem_rust::wasm_rpc::Pollable;
+use golem_utils::LOGGING_STATE;
 use log::trace;
 use std::cell::{Ref, RefCell, RefMut};
 
