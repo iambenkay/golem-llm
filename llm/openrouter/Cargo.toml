@@ -17,7 +17,6 @@ durability = ["golem-rust/durability", "golem-llm/durability"]
 
 [dependencies]
 golem-llm = { workspace = true }
-golem-utils = { workspace = true }
 
 golem-rust = { workspace = true }
 log = { workspace = true }

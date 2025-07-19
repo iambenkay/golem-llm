@@ -1,6 +1,9 @@
+use std::cell::RefCell;
+
 use exports::golem::vector::types::{self, GuestLazyFilterExpression, GuestLazyMetadataValue};
 use golem_rust::value_and_type::{FromValueAndType, IntoValue, TypeNodeBuilder};
 use golem_rust::wasm_rpc::{NodeBuilder, ResourceMode, Uri};
+use golem_utils::BaseLoggingState;
 
 pub mod durability;
 pub mod error;
@@ -97,6 +100,24 @@ impl GuestLazyMetadataValue for types::MetadataValue {
     fn get(&self) -> types::MetadataValue {
         self.clone()
     }
+}
+
+pub struct LoggingState {
+    base_logger: BaseLoggingState,
+}
+
+impl LoggingState {
+    /// Initializes WASI logging based on the `GOLEM_VECTOR_LOG` environment variable.
+    pub fn init(&mut self) {
+        self.base_logger.init("GOLEM_VECTOR_LOG");
+    }
+}
+
+thread_local! {
+    /// This holds the state of our application.
+    pub static LOGGING_STATE: RefCell<LoggingState> = const { RefCell::new(LoggingState {
+        base_logger: BaseLoggingState::new(),
+    }) };
 }
 
 pub use crate::exports::golem::vector;

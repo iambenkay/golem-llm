@@ -217,8 +217,8 @@ interface collections {
     record collection-info {
         name: string,
         description: option<string>,
-        dimension: u32,
-        metric: distance-metric,
+        dimension: option<u32>,
+        metric: option<distance-metric>,
         vector-count: u64,
         size-bytes: option<u64>,
         index-ready: bool,
@@ -226,7 +226,7 @@ interface collections {
         updated-at: option<u64>,
         provider-stats: option<metadata>,
     }
-
+    
     /// Create or update collection (upsert)
     upsert-collection: func(
         name: string,

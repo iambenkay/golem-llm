@@ -2,6 +2,7 @@ use std::cell::{Ref, RefCell, RefMut};
 
 use client::{CompletionsRequest, OllamaApi};
 use conversions::{messages_to_request, process_response};
+use golem_llm::LOGGING_STATE;
 use golem_llm::{
     chat_stream::{LlmChatStream, LlmChatStreamState},
     durability::{DurableLLM, ExtendedGuest},
@@ -12,7 +13,6 @@ use golem_llm::{
     },
 };
 use golem_rust::wasm_rpc::Pollable;
-use golem_utils::LOGGING_STATE;
 use log::trace;
 
 mod client;

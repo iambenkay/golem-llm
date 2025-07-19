@@ -12,6 +12,7 @@ path = "src/lib.rs"
 crate-type = ["rlib"]
 
 [dependencies]
+golem-utils = { workspace = true }
 golem-rust = { workspace = true }
 log = { workspace = true }
 mime = "0.3.17"
@@ -23,3 +24,4 @@ wit-bindgen = { version = "0.40.0" }
 [features]
 default = ["durability"]
 durability = ["golem-rust/durability"]
+nopoll = []

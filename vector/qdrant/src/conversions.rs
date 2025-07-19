@@ -1,7 +1,8 @@
 use golem_vector::{
     error::from_reqwest_error,
-    vector::{connection, types},
+    vector::{collections, connection, types},
 };
+use qdrant_client::{qdrant::Distance, QdrantError};
 use reqwest::StatusCode;
 use serde::de::DeserializeOwned;
 
@@ -17,35 +18,28 @@ pub fn get_api_key(
     }
 }
 
-pub fn get_response_body<T>(response: reqwest::Response) -> Result<T, types::VectorError>
-where
-    T: DeserializeOwned,
-{
-    if matches!(response.status(), StatusCode::UNAUTHORIZED) {
-        return Err(types::VectorError::Unauthorized(
-            "The API key you supplied is not valid".to_string(),
-        ));
-    }
-
-    if matches!(response.status(), StatusCode::NOT_FOUND) {
-        let message = response
-            .json::<serde_json::Value>()
-            .map(|v| {
-                if let Some(v) = v.as_object() {
-                    if let Some(status) = v.get("status").and_then(serde_json::Value::as_object) {
-                        if let Some(error) = status.get("error").and_then(serde_json::Value::as_str)
-                        {
-                            return error.to_string();
-                        }
-                    }
-                }
-                return "The requested resource does not exist".to_string();
-            })
-            .unwrap();
-        return Err(types::VectorError::NotFound(message));
-    }
-
-    response.json().map_err(from_reqwest_error)
+pub fn from_qdrant_error(value: QdrantError) -> types::VectorError {
+    match value {
+            QdrantError::ResponseError { status } => types::VectorError::ProviderError(format!(
+                "An error was returned by Qdrant - code: {}, message: {}, metadata: {:?}",
+                status.code(),
+                status.message(),
+                status.metadata()
+            )),
+            QdrantError::ResourceExhaustedError {
+                status,
+                retry_after_seconds,
+            } => types::VectorError::ProviderError(format!("A resource exhausted error was returned by Qdrant - code: {}, message: {}, metadata: {:?}, retry after {retry_after_seconds} seconds", 
+            status.code(),
+            status.message(),
+            status.metadata())),
+            QdrantError::ConversionError(error) => types::VectorError::ProviderError(format!("A conversion error occurred: {error}")),
+            QdrantError::InvalidUri(invalid_uri) => types::VectorError::InvalidParams(format!("An invalid Qdrant server URL was provided: {invalid_uri}")),
+            QdrantError::NoSnapshotFound(snapshot) => types::VectorError::NotFound(format!("The requested snapshot was not found: {snapshot}")),
+            QdrantError::Io(error) => types::VectorError::ProviderError(format!("An IO Error occurred: {error}")),
+            QdrantError::Reqwest(error) => types::VectorError::ProviderError(format!("An API request error occurred: {error}")),
+            QdrantError::JsonToPayload(value) => types::VectorError::ProviderError(format!("An unsupported json value was received instead of an object: {value}")),
+        }
 }
 
 pub fn json_to_metadata(json: serde_json::Value) -> types::MetadataValue {
@@ -72,5 +66,21 @@ pub fn json_to_metadata(json: serde_json::Value) -> types::MetadataValue {
                 .map(|(k, v)| (k, types::LazyMetadataValue::new(json_to_metadata(v))))
                 .collect(),
         ),
+    }
+}
+
+pub fn from_qdrant_collection_info(name: String, info: qdrant_client::qdrant::CollectionInfo) -> collections::CollectionInfo {
+    Distance
+    collections::CollectionInfo {
+        name,
+        description: None,
+        dimension: info.,
+        metric: info,
+        vector_count: info.vectors_count(),
+        size_bytes: None,
+        index_ready: info.indexed_vectors_count() > 0,
+        created_at: None,
+        updated_at: None,
+        provider_stats: ,
     }
 }

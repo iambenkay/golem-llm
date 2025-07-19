@@ -1,6 +1,6 @@
 use std::{cell::RefCell, sync::Arc};
 
-use client::Qdrant;
+use client::QdrantService;
 use conversions::get_api_key;
 use golem_vector::{
     durability::DurableVector,
@@ -281,7 +281,7 @@ impl connection::Guest for QdrantComponent {
     ) -> Result<(), types::VectorError> {
         let api_key = get_api_key(credentials)?;
 
-        let qdrant = Qdrant::new(endpoint, api_key, timeout_ms)?;
+        let qdrant = QdrantService::new(endpoint, api_key, timeout_ms)?;
 
         qdrant.list_collections()?;
         set_qdrant_client(qdrant)?;
@@ -326,7 +326,7 @@ impl connection::Guest for QdrantComponent {
     ) -> Result<bool, types::VectorError> {
         let api_key = get_api_key(credentials)?;
 
-        let qdrant = Qdrant::new(endpoint, api_key, timeout_ms)?;
+        let qdrant = QdrantService::new(endpoint, api_key, timeout_ms)?;
         match qdrant.list_collections() {
             Ok(..) => Ok(true),
             Err(..) => Ok(false),
@@ -365,7 +365,7 @@ impl namespaces::Guest for QdrantComponent {
     }
 }
 
-fn get_qdrant_client() -> Result<Arc<Qdrant>, types::VectorError> {
+fn get_qdrant_client() -> Result<Arc<QdrantService>, types::VectorError> {
     QDRANT_CLIENT.with_borrow(|client_opt| match client_opt {
         Some(client) => Ok(client.clone()),
         None => Err(types::VectorError::ConnectionError(
@@ -374,7 +374,7 @@ fn get_qdrant_client() -> Result<Arc<Qdrant>, types::VectorError> {
     })
 }
 
-fn set_qdrant_client(qdrant_client: Qdrant) -> Result<(), types::VectorError> {
+fn set_qdrant_client(qdrant_client: QdrantService) -> Result<(), types::VectorError> {
     QDRANT_CLIENT.with_borrow_mut(|client_opt| match client_opt {
         Some(..) => Err(types::VectorError::AlreadyExists(
             "Connection has already been configured".to_string(),
@@ -400,7 +400,7 @@ fn unset_qdrant_client() -> Result<(), types::VectorError> {
 }
 
 thread_local! {
-    static QDRANT_CLIENT: RefCell<Option<Arc<Qdrant>>> = const { RefCell::new(None) };
+    static QDRANT_CLIENT: RefCell<Option<Arc<QdrantService>>> = const { RefCell::new(None) };
 }
 
 type DurableQdrantComponent = DurableVector<QdrantComponent>;
