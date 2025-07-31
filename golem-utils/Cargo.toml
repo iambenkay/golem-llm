@@ -16,6 +16,7 @@ log = { workspace = true }
 thiserror = "2.0.12"
 wasi-logger = "0.1.2"
 golem-rust = { workspace = true }
+paste = "1.0.15"
 
 [features]
 durability = ["golem-rust/durability"]

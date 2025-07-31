@@ -3,7 +3,10 @@ package golem:vector@1.0.0;
 /// Core types and fundamental data structures for vector operations
 interface types {
     /// Unique identifier for vectors and collections
-    type id = string;
+    variant id {
+        uint(u64),
+        str(string),
+    }
     
     /// Standard dense vector representation
     type dense-vector = list<f32>;
@@ -169,7 +172,7 @@ interface types {
         /// Similarity score (higher = more similar)
         score: f32,
         /// Distance from query vector (lower = more similar)
-        distance: f32,
+        distance: option<f32>,
         /// Vector data (if requested)
         vector: option<vector-data>,
         /// Associated metadata (if requested)
@@ -271,7 +274,7 @@ interface vectors {
     /// List response with pagination
     record list-response {
         vectors: list<vector-record>,
-        next-cursor: option<string>,
+        next-cursor: option<id>,
         total-count: option<u64>,
     }
     
@@ -343,7 +346,7 @@ interface vectors {
         namespace: option<string>,
         filter: option<filter-expression>,
         limit: option<u32>,
-        cursor: option<string>,
+        cursor: option<id>,
         include-vectors: option<bool>,
         include-metadata: option<bool>
     ) -> result<list-response, vector-error>;

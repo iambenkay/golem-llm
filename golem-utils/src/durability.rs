@@ -18,6 +18,7 @@ impl Display for UnusedError {
 
 fn run_durably<F, P, R>(
     func_type: DurableFunctionType,
+    persistence_level: PersistenceLevel,
     interface: &'static str,
     func_name: &'static str,
     params: P,
@@ -33,8 +34,7 @@ where
     {
         let durability = Durability::<R, UnusedError>::new(interface, func_name, func_type);
         if durability.is_live() {
-            let result =
-                with_persistence_level(PersistenceLevel::PersistNothing, || func(params.clone()));
+            let result = with_persistence_level(persistence_level, || func(params.clone()));
 
             durability.persist_infallible(params, result)
         } else {
@@ -61,6 +61,7 @@ where
 {
     run_durably(
         DurableFunctionType::ReadRemote,
+        PersistenceLevel::PersistNothing,
         interface,
         func_name,
         params,
@@ -81,6 +82,49 @@ where
 {
     run_durably(
         DurableFunctionType::WriteRemote,
+        PersistenceLevel::PersistNothing,
+        interface,
+        func_name,
+        params,
+        func,
+    )
+}
+
+pub fn write_remote_durably_with_side_effects<F, P, R>(
+    interface: &'static str,
+    func_name: &'static str,
+    params: P,
+    func: F,
+) -> R
+where
+    P: IntoValue + std::fmt::Debug + Clone,
+    F: FnOnce(P) -> R,
+    R: std::fmt::Debug + IntoValue + FromValueAndType + Clone,
+{
+    run_durably(
+        DurableFunctionType::WriteRemote,
+        PersistenceLevel::PersistRemoteSideEffects,
+        interface,
+        func_name,
+        params,
+        func,
+    )
+}
+
+pub fn read_remote_durably_with_side_effects<F, P, R>(
+    interface: &'static str,
+    func_name: &'static str,
+    params: P,
+    func: F,
+) -> R
+where
+    P: IntoValue + std::fmt::Debug + Clone,
+    F: FnOnce(P) -> R,
+    R: std::fmt::Debug + IntoValue + FromValueAndType + Clone,
+{
+    run_durably(
+        DurableFunctionType::ReadRemote,
+        PersistenceLevel::PersistRemoteSideEffects,
         interface,
         func_name,
         params,

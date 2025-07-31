@@ -12,6 +12,7 @@ use crate::vector::types::{
     SearchResult, VectorData, VectorError, VectorRecord,
 };
 use crate::vector::vectors::{BatchResult, Guest as VectorsGuest, ListResponse};
+use golem_utils::durability::write_remote_durably_with_side_effects;
 use golem_utils::{
     durability::{read_remote_durably, write_remote_durably},
     params::{
@@ -40,7 +41,7 @@ impl<Impl: ConnectionGuest> ConnectionGuest for DurableVector<Impl> {
         read_remote_durably(
             "golem_vector::connection",
             "connect",
-            Param4(endpoint, credentials, timeout_ms, options),
+            Param4::new(endpoint, credentials, timeout_ms, options),
             |params| params.invoke(Impl::connect),
         )
     }
@@ -75,7 +76,7 @@ impl<Impl: ConnectionGuest> ConnectionGuest for DurableVector<Impl> {
         read_remote_durably(
             "golem_vector::connection",
             "test_connection",
-            Param4(endpoint, credentials, timeout_ms, options),
+            Param4::new(endpoint, credentials, timeout_ms, options),
             |params| params.invoke(Impl::test_connection),
         )
     }
@@ -91,7 +92,7 @@ impl<Impl: NamespacesGuest> NamespacesGuest for DurableVector<Impl> {
         write_remote_durably(
             "golem_vector::namespaces",
             "upsert_namespace",
-            Param3(collection, namespace, metadata),
+            Param3::new(collection, namespace, metadata),
             |params| params.invoke(Impl::upsert_namespace),
         )
     }
@@ -101,7 +102,7 @@ impl<Impl: NamespacesGuest> NamespacesGuest for DurableVector<Impl> {
         read_remote_durably(
             "golem_vector::namespaces",
             "list_namespaces",
-            Param(collection),
+            Param::new(collection),
             |params| params.invoke(Impl::list_namespaces),
         )
     }
@@ -111,7 +112,7 @@ impl<Impl: NamespacesGuest> NamespacesGuest for DurableVector<Impl> {
         read_remote_durably(
             "golem_vector::namespaces",
             "get_namespace",
-            Param2(collection, namespace),
+            Param2::new(collection, namespace),
             |params| params.invoke(Impl::get_namespace),
         )
     }
@@ -121,7 +122,7 @@ impl<Impl: NamespacesGuest> NamespacesGuest for DurableVector<Impl> {
         write_remote_durably(
             "golem_vector::namespaces",
             "delete_namespace",
-            Param2(collection, namespace),
+            Param2::new(collection, namespace),
             |params| params.invoke(Impl::delete_namespace),
         )
     }
@@ -131,7 +132,7 @@ impl<Impl: NamespacesGuest> NamespacesGuest for DurableVector<Impl> {
         read_remote_durably(
             "golem_vector::namespaces",
             "namespace_exists",
-            Param2(collection, namespace),
+            Param2::new(collection, namespace),
             |params| params.invoke(Impl::namespace_exists),
         )
     }
@@ -146,7 +147,7 @@ impl<Impl: AnalyticsGuest> AnalyticsGuest for DurableVector<Impl> {
         read_remote_durably(
             "golem_vector::analytics",
             "get_collection_stats",
-            Param2(collection, namespace),
+            Param2::new(collection, namespace),
             |params| params.invoke(Impl::get_collection_stats),
         )
     }
@@ -160,7 +161,7 @@ impl<Impl: AnalyticsGuest> AnalyticsGuest for DurableVector<Impl> {
         read_remote_durably(
             "golem_vector::analytics",
             "get_field_stats",
-            Param3(collection, field, namespace),
+            Param3::new(collection, field, namespace),
             |params| params.invoke(Impl::get_field_stats),
         )
     }
@@ -175,7 +176,7 @@ impl<Impl: AnalyticsGuest> AnalyticsGuest for DurableVector<Impl> {
         read_remote_durably(
             "golem_vector::analytics",
             "get_field_distribution",
-            Param4(collection, field, limit, namespace),
+            Param4::new(collection, field, limit, namespace),
             |params| params.invoke(Impl::get_field_distribution),
         )
     }
@@ -197,7 +198,7 @@ impl<Impl: SearchExtendedGuest> SearchExtendedGuest for DurableVector<Impl> {
         read_remote_durably(
             "golem_vector::search-extended",
             "recommend_vectors",
-            Param9(
+            Param9::new(
                 collection,
                 positive,
                 negative,
@@ -225,7 +226,7 @@ impl<Impl: SearchExtendedGuest> SearchExtendedGuest for DurableVector<Impl> {
         read_remote_durably(
             "golem_vector::search-extended",
             "discover_vectors",
-            Param7(
+            Param7::new(
                 collection,
                 context_pairs,
                 limit,
@@ -253,7 +254,7 @@ impl<Impl: SearchExtendedGuest> SearchExtendedGuest for DurableVector<Impl> {
         read_remote_durably(
             "golem_vector::search-extended",
             "search_groups",
-            Param9(
+            Param9::new(
                 collection,
                 query,
                 group_by,
@@ -283,7 +284,7 @@ impl<Impl: SearchExtendedGuest> SearchExtendedGuest for DurableVector<Impl> {
         read_remote_durably(
             "golem_vector::search-extended",
             "search_range",
-            Param9(
+            Param9::new(
                 collection,
                 vector,
                 min_distance,
@@ -309,7 +310,7 @@ impl<Impl: SearchExtendedGuest> SearchExtendedGuest for DurableVector<Impl> {
         read_remote_durably(
             "golem_vector::search-extended",
             "search_text",
-            Param5(collection, query_text, limit, filter, namespace),
+            Param5::new(collection, query_text, limit, filter, namespace),
             |params| params.invoke(Impl::search_text),
         )
     }
@@ -332,7 +333,7 @@ impl<Impl: SearchGuest> SearchGuest for DurableVector<Impl> {
         read_remote_durably(
             "golem_vector::search",
             "search_vectors",
-            Param10(
+            Param10::new(
                 collection,
                 query,
                 limit,
@@ -358,7 +359,7 @@ impl<Impl: SearchGuest> SearchGuest for DurableVector<Impl> {
         read_remote_durably(
             "golem_vector::search",
             "find_similar",
-            Param4(collection, vector, limit, namespace),
+            Param4::new(collection, vector, limit, namespace),
             |params| params.invoke(Impl::find_similar),
         )
     }
@@ -377,7 +378,7 @@ impl<Impl: SearchGuest> SearchGuest for DurableVector<Impl> {
         read_remote_durably(
             "golem_vector::search",
             "batch_search",
-            Param8(
+            Param8::new(
                 collection,
                 queries,
                 limit,
@@ -402,7 +403,7 @@ impl<Impl: VectorsGuest> VectorsGuest for DurableVector<Impl> {
         write_remote_durably(
             "golem_vector::vectors",
             "upsert_vectors",
-            Param3(collection, vectors, namespace),
+            Param3::new(collection, vectors, namespace),
             |params| params.invoke(Impl::upsert_vectors),
         )
     }
@@ -418,7 +419,7 @@ impl<Impl: VectorsGuest> VectorsGuest for DurableVector<Impl> {
         write_remote_durably(
             "golem_vector::vectors",
             "upsert_vector",
-            Param5(collection, id, vector, metadata, namespace),
+            Param5::new(collection, id, vector, metadata, namespace),
             |params| params.invoke(Impl::upsert_vector),
         )
     }
@@ -434,7 +435,7 @@ impl<Impl: VectorsGuest> VectorsGuest for DurableVector<Impl> {
         read_remote_durably(
             "golem_vector::vectors",
             "get_vectors",
-            Param5(
+            Param5::new(
                 collection,
                 ids,
                 namespace,
@@ -454,7 +455,7 @@ impl<Impl: VectorsGuest> VectorsGuest for DurableVector<Impl> {
         read_remote_durably(
             "golem_vector::vectors",
             "get_vector",
-            Param3(collection, id, namespace),
+            Param3::new(collection, id, namespace),
             |params| params.invoke(Impl::get_vector),
         )
     }
@@ -471,7 +472,7 @@ impl<Impl: VectorsGuest> VectorsGuest for DurableVector<Impl> {
         write_remote_durably(
             "golem_vector::vectors",
             "update_vector",
-            Param6(collection, id, vector, metadata, namespace, merge_metadata),
+            Param6::new(collection, id, vector, metadata, namespace, merge_metadata),
             |params| params.invoke(Impl::update_vector),
         )
     }
@@ -485,7 +486,7 @@ impl<Impl: VectorsGuest> VectorsGuest for DurableVector<Impl> {
         write_remote_durably(
             "golem_vector::vectors",
             "delete_vectors",
-            Param3(collection, ids, namespace),
+            Param3::new(collection, ids, namespace),
             |params| params.invoke(Impl::delete_vectors),
         )
     }
@@ -499,7 +500,7 @@ impl<Impl: VectorsGuest> VectorsGuest for DurableVector<Impl> {
         write_remote_durably(
             "golem_vector::vectors",
             "delete_by_filter",
-            Param3(collection, filter, namespace),
+            Param3::new(collection, filter, namespace),
             |params| params.invoke(Impl::delete_by_filter),
         )
     }
@@ -509,7 +510,7 @@ impl<Impl: VectorsGuest> VectorsGuest for DurableVector<Impl> {
         write_remote_durably(
             "golem_vector::vectors",
             "delete_namespace",
-            Param2(collection, namespace),
+            Param2::new(collection, namespace),
             |params| params.invoke(Impl::delete_namespace),
         )
     }
@@ -520,14 +521,14 @@ impl<Impl: VectorsGuest> VectorsGuest for DurableVector<Impl> {
         namespace: Option<String>,
         filter: Option<FilterExpression>,
         limit: Option<u32>,
-        cursor: Option<String>,
+        cursor: Option<Id>,
         include_vectors: Option<bool>,
         include_metadata: Option<bool>,
     ) -> Result<ListResponse, VectorError> {
         read_remote_durably(
             "golem_vector::vectors",
             "list_vectors",
-            Param7(
+            Param7::new(
                 collection,
                 namespace,
                 filter,
@@ -549,7 +550,7 @@ impl<Impl: VectorsGuest> VectorsGuest for DurableVector<Impl> {
         read_remote_durably(
             "golem_vector::vectors",
             "count_vectors",
-            Param3(collection, filter, namespace),
+            Param3::new(collection, filter, namespace),
             |params| params.invoke(Impl::count_vectors),
         )
     }
@@ -565,10 +566,10 @@ impl<Impl: CollectionsGuest> CollectionsGuest for DurableVector<Impl> {
         index_config: Option<IndexConfig>,
         metadata: Option<Metadata>,
     ) -> Result<CollectionInfo, VectorError> {
-        write_remote_durably(
+        write_remote_durably_with_side_effects(
             "golem_vector::collections",
             "upsert_collection",
-            Param6(name, description, dimension, metric, index_config, metadata),
+            Param6::new(name, description, dimension, metric, index_config, metadata),
             |params| params.invoke(Impl::upsert_collection),
         )
     }
@@ -588,7 +589,7 @@ impl<Impl: CollectionsGuest> CollectionsGuest for DurableVector<Impl> {
         read_remote_durably(
             "golem_vector::collections",
             "get_collection",
-            Param(name),
+            Param::new(name),
             |params| params.invoke(Impl::get_collection),
         )
     }
@@ -602,7 +603,7 @@ impl<Impl: CollectionsGuest> CollectionsGuest for DurableVector<Impl> {
         write_remote_durably(
             "golem_vector::collections",
             "update_collection",
-            Param3(name, description, metadata),
+            Param3::new(name, description, metadata),
             |params| params.invoke(Impl::update_collection),
         )
     }
@@ -612,7 +613,7 @@ impl<Impl: CollectionsGuest> CollectionsGuest for DurableVector<Impl> {
         write_remote_durably(
             "golem_vector::collections",
             "delete_collection",
-            Param(name),
+            Param::new(name),
             |params| params.invoke(Impl::delete_collection),
         )
     }
@@ -622,7 +623,7 @@ impl<Impl: CollectionsGuest> CollectionsGuest for DurableVector<Impl> {
         read_remote_durably(
             "golem_vector::collections",
             "collection_exists",
-            Param(name),
+            Param::new(name),
             |params| params.invoke(Impl::collection_exists),
         )
     }
